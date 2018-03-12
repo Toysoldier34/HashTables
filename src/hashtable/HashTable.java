@@ -6,6 +6,7 @@
 */
 package hashtable;
 
+import java.util.ArrayList;
 import java.util.Iterator;
 
 import structures.ICollection;
@@ -15,8 +16,31 @@ public class HashTable<T> implements ICollection<T> {
 	//field
 	private int size;  //current size of main hash table
 	private int tableMax;  //max size of main hash table
+	private ArrayList<Node> tableArray;  //main array for table
 	
 	
+	//private inner class
+	private class Node {
+		T data;
+		Node next;
+		
+		public Node(T element) {
+			this.data = element;
+			this.next = null;
+		}//end constructor
+	}//end class Node
+
+	/**
+	 * constructor of HashTable
+	 * @param size
+	 * @param tableMax
+	 */
+	public HashTable() {
+		super();
+		this.size = 0;
+		this.tableMax = 100;
+		this.tableArray = new ArrayList<>();
+	}//end constructor
 
 	@Override
 	public void add(T element) {
@@ -55,7 +79,17 @@ public class HashTable<T> implements ICollection<T> {
 
 	@Override
 	public T get(T element) {
-		// TODO Auto-generated method stub
+		int index = findChain(element);		
+		Node head = tableArray.get(index);
+		Node current = head;
+		
+		while (current != null) {
+			if (current.data.equals(element)) {
+				return current.data;
+			} else {
+				current = current.next;
+			}
+		}		
 		return null;
 	}
 	
