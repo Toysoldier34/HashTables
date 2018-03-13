@@ -70,7 +70,7 @@ public interface ICollection<T> extends Iterable<T> {
 	public void clear();
 
 
-	/***
+	/**
 	 * Returns an element in the collection that matches the
 	 * input parameter according the equals() method of the
 	 * parameter.
@@ -81,7 +81,7 @@ public interface ICollection<T> extends Iterable<T> {
 	public T get(T element);
 
 
-	/***
+	/**
 	 * Returns an iterator over the collection.
 	 * 
 	 * @return an object using the Iterator<T> interface

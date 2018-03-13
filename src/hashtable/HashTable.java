@@ -21,6 +21,7 @@ public class HashTable<T> implements ICollection<T> {
 	
 	//private inner class
 	private class Node {
+		//int key;
 		T data;
 		Node next;
 		
@@ -40,6 +41,9 @@ public class HashTable<T> implements ICollection<T> {
 		this.size = 0;
 		this.tableMax = 100;
 		this.tableArray = new ArrayList<>();
+		for (int i = 0; i < tableMax; i++) {
+			tableArray.add(null);
+		}
 	}//end constructor
 
 	/**
@@ -52,9 +56,34 @@ public class HashTable<T> implements ICollection<T> {
 	 */
 	@Override
 	public void add(T element) {
-		// TODO Auto-generated method stub
+		int index = findChain(element);		
+		Node head = tableArray.get(index);
+		if (head == null) {
+			head = new Node(element);
+			size++;
+			System.out.println("no head");
+			return;
+		}
 		
-	}
+		Node current = head;
+		
+		while (current != null) {
+			if (current.data.equals(element)) {
+				current.data = element;
+				System.out.println("rfgerger");
+				break;
+			}
+			if (current.next == null) {
+				current.next = new Node(element);
+				size++;
+				System.out.println("gggg");
+				break;
+			} else {
+				current = current.next;
+			}
+		}//end while
+		
+	}//end add
 
 	/**
 	 * Finds and removes an element from the collection.
@@ -65,9 +94,22 @@ public class HashTable<T> implements ICollection<T> {
 	 */
 	@Override
 	public void remove(T element) {
-		// TODO Auto-generated method stub
+		int index = findChain(element);		
+		Node head = tableArray.get(index);
+		Node current = head;
+		Node prev = null;
 		
-	}
+		while (current != null) {
+			if (current.data.equals(element)) {
+				//TODO prev.next = current.next;  //check later
+				current = current.next;
+				size--;
+			} else {
+				prev = current;
+				current = current.next;
+			}
+		}//end while
+	}//end remove
 
 	/**
 	 * Reports whether the collection contains an element.
@@ -89,7 +131,7 @@ public class HashTable<T> implements ICollection<T> {
 	@Override
 	public int size() {
 		return size;
-	}
+	}//end size
 
 	/**
 	 * Reports whether the collection is empty or not.
@@ -99,16 +141,18 @@ public class HashTable<T> implements ICollection<T> {
 	@Override
 	public boolean isEmpty() {
 		return (size == 0);
-	}
+	}//end isEmpty
 
 	/**
 	 * Removes all elements from the collection.
 	 */
 	@Override
 	public void clear() {
-		// TODO Auto-generated method stub
-		
-	}
+		for (int i = 0; i < tableMax; i++) {
+			tableArray.set(i, null);
+		}
+		size = 0;		
+	}//end clear
 
 	/**
 	 * Returns an element in the collection that matches the
@@ -132,17 +176,17 @@ public class HashTable<T> implements ICollection<T> {
 			}
 		}		
 		return null;
-	}
+	}//end get
 	
 	/**
-	 * runs hashCode on object and returns appropriate
+	 * runs hashCode() on object and returns appropriate
 	 * index position of the chain object would belong to
 	 * @param T element  to find hash chain of
 	 * @return int index of chain
 	 */
-	private int findChain(T element) {
+	public int findChain(T element) { //TODO change to private
 		return ((element.hashCode()) % tableMax);
-	}
+	}//end findChain
 
 	/**
 	 * Returns an iterator over the collection.
@@ -153,6 +197,8 @@ public class HashTable<T> implements ICollection<T> {
 	public Iterator<T> iterator() {
 		// TODO Auto-generated method stub
 		return null;
-	}
+	}//end Iterator
 
 }
+
+
