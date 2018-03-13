@@ -7,7 +7,10 @@
 package hashtable;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.ConcurrentModificationException;
 import java.util.Iterator;
+import java.util.NoSuchElementException;
 
 import structures.ICollection;
 
@@ -18,6 +21,7 @@ public class HashTable<T> implements ICollection<T> {
 	private int tableMax;  //max size of main hash table
 	public ArrayList<Node> tableArray;  //main array for table
 	private final int MAXTABLESIZE = 3;
+	private int modCount;
 	
 	
 	//private inner class
@@ -41,6 +45,7 @@ public class HashTable<T> implements ICollection<T> {
 		super();
 		this.size = 0;
 		this.tableMax = MAXTABLESIZE;
+		this.modCount = 0;
 		this.tableArray = new ArrayList<>();
 		for (int i = 0; i < tableMax; i++) {
 			tableArray.add(null);
@@ -103,7 +108,11 @@ public class HashTable<T> implements ICollection<T> {
 		
 		while (current != null) {
 			if (current.data.equals(element)) {
-				//TODO prev.next = current.next;  //check later
+				if (prev != null) {
+					prev.next = current.next;  //check later
+				} else {
+					tableArray.set(index, current.next);
+				}
 				current = current.next;
 				size--;
 			} else {
@@ -199,9 +208,112 @@ public class HashTable<T> implements ICollection<T> {
 	@Override
 	public Iterator<T> iterator() {
 		// TODO Auto-generated method stub
-		return null;
+		if (tableArray.isEmpty()) {
+			return Collections.emptyIterator();
+		} else {
+			//return new Enumerator<T>(type, true);
+			return new HashTableIterator();
+		}
 	}//end Iterator
 
-}
+	
+	private class HashTableIterator implements Iterator<T> {
+
+		protected int expectedModCount = modCount;  //TODO
+		int currentIndex = 0;
+		Node currentNode;
+		
+		ArrayList table;
+        int index;
+        Node entry = null;
+        Node lastReturned = null;		
+        
+        
+        public HashTableIterator() {
+        	table = tableArray;
+    		Collections.reverse(table);
+    		index = table.size() -1;
+        }
+		
+		@Override
+		public boolean hasNext() {
+			// TODO Auto-generated method stub
+//			if (expectedModCount != modCount) {
+//				throw new ConcurrentModificationException();
+//			}
+//			
+//			for (int i = currentIndex; i < tableMax; i++) {
+//				currentIndex = i;
+//				if (!(tableArray.get(i) == null)) {
+//					Node n = tableArray.get(i);
+//					if ()
+//				}
+//			}
+//			
+			
+			Node e = entry;
+            int i = index;
+            ArrayList t = table;
+            /* Use locals for faster loop iteration */
+            while (e == null && i >= 0) {
+                e = (HashTable<T>.Node) t.get(i);
+                i--;
+            }
+            entry = e;
+            index = i;
+            return e != null;
+			
+		}
+
+		@Override
+		public T next() {
+			if (expectedModCount != modCount) {
+				throw new ConcurrentModificationException();
+			}
+			
+			Node et = entry;
+            int i = index;
+            ArrayList t = table;
+            
+            while (et == null && i > 0) {
+            	et = (HashTable<T>.Node) t.get(i);
+                i--;
+            }
+            entry = et;
+            index = i;
+            if (et != null) {
+                Node e = lastReturned = entry;
+                entry = e.next;
+                return e.data;
+            }
+            throw new NoSuchElementException("Hashtable Enumerator");
+			
+		}
+		
+		
+//TODO delete	//field
+//		private int size;  //current size of main hash table
+//		private int tableMax;  //max size of main hash table
+//		public ArrayList<Node> tableArray;  //main array for table
+//		private final int MAXTABLESIZE = 3;
+//		private int modCount;
+		
+		
+		
+		
+		
+	}//end class HashTableIterator
+	
+	
+	
+}//end class HashTable
+
+
+
+
+
+
+
+
 
 
