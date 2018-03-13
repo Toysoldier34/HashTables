@@ -14,30 +14,38 @@ import java.util.NoSuchElementException;
 
 import structures.ICollection;
 
+/**
+ * Hash Table data collection able to add and remove elements
+ * with an iterator and other functions to check the collection
+ * 
+ * @author Tony Thompson
+ *
+ * @param <T>
+ */
 public class HashTable<T> implements ICollection<T> {
-	
-	//field
-	private int size;  //current size of main hash table
-	private int tableMax;  //max size of main hash table
-	public ArrayList<Node> tableArray;  //main array for table
+
+	// field
+	private int size; // current size of main hash table
+	private int tableMax; // max size of main hash table
+	public ArrayList<Node> tableArray; // main array for table
 	private final int MAXTABLESIZE = 3;
 	private int modCount;
-	
-	
-	//private inner class
+
+	// private inner class for Nodes
 	private class Node {
-		//int key;
 		T data;
 		Node next;
-		
+
 		public Node(T element) {
 			this.data = element;
 			this.next = null;
-		}//end constructor
-	}//end class Node
+		}// end constructor
+	}// end class Node
+
 
 	/**
 	 * constructor of HashTable
+	 * 
 	 * @param size
 	 * @param tableMax
 	 */
@@ -50,90 +58,97 @@ public class HashTable<T> implements ICollection<T> {
 		for (int i = 0; i < tableMax; i++) {
 			tableArray.add(null);
 		}
-	}//end constructor
+	}// end constructor
+
 
 	/**
 	 *
-	 * Adds an element to the collection. No specific ordering
-	 * is
-	 * required.
-	 *  
-	 * @param element the new element to put in the collection
+	 * Adds an element to the collection. No specific ordering is required.
+	 * 
+	 * @param element
+	 *            the new element to put in the collection
 	 */
 	@Override
 	public void add(T element) {
-		int index = findChain(element);		
+		modCount++;
+		int index = findChain(element);
 		Node head = tableArray.get(index);
 		if (head == null) {
 			head = new Node(element);
 			tableArray.set(index, head);
 			size++;
-			System.out.println("no head");
 			return;
 		}
-		
+
 		Node current = head;
-		
 		while (current != null) {
 			if (current.data.equals(element)) {
 				current.data = element;
-				System.out.println("Add already exists");
 				break;
 			}
 			if (current.next == null) {
 				current.next = new Node(element);
 				size++;
-				System.out.println("Add to existing link:" + element);
 				break;
 			} else {
 				current = current.next;
 			}
-		}//end while
-		
-	}//end add
+		} // end while
+	}// end add
+
 
 	/**
 	 * Finds and removes an element from the collection.
 	 * 
-	 * @throws java.util.NoSuchElementException thrown when the
-	 * element is not found in the collection
-	 * @param element the element to remove
+	 * @throws java.util.NoSuchElementException
+	 *             thrown when the element is not found in the collection
+	 * @param element
+	 *            the element to remove
 	 */
 	@Override
 	public void remove(T element) {
-		int index = findChain(element);		
+		modCount++;
+		int index = findChain(element);
 		Node head = tableArray.get(index);
 		Node current = head;
 		Node prev = null;
-		
-		while (current != null) {
-			if (current.data.equals(element)) {
-				if (prev != null) {
-					prev.next = current.next;  //check later
+
+		if (contains(element)) {
+			while (current != null) {
+				if (current.data.equals(element)) {
+					if (prev != null) {
+						prev.next = current.next; // check later
+					} else {
+						tableArray.set(index, current.next);
+					}
+					current = current.next;
+					size--;
+					return;
 				} else {
-					tableArray.set(index, current.next);
+					prev = current;
+					current = current.next;
 				}
-				current = current.next;
-				size--;
-			} else {
-				prev = current;
-				current = current.next;
-			}
-		}//end while
-		//TODO throw exception
-	}//end remove
+			} // end while
+		} else {
+			throw new NoSuchElementException();
+		}//end if else
+	}// end remove
+
 
 	/**
 	 * Reports whether the collection contains an element.
 	 *
-	 * @param element the element to search for.
+	 * @param element
+	 *            the element to search for.
 	 * @return true if the element is found, otherwise false
 	 */
 	@Override
 	public boolean contains(T element) {
-		if (get(element) != null) return true;
+		if (get(element) != null)
+			return true;
 		return false;
 	}
+
 
 	/**
 	 * Returns the number of elements in the collection.
@@ -143,7 +158,8 @@ public class HashTable<T> implements ICollection<T> {
 	@Override
 	public int size() {
 		return size;
-	}//end size
+	}// end size
+
 
 	/**
 	 * Reports whether the collection is empty or not.
@@ -153,52 +169,59 @@ public class HashTable<T> implements ICollection<T> {
 	@Override
 	public boolean isEmpty() {
 		return (size == 0);
-	}//end isEmpty
+	}// end isEmpty
+
 
 	/**
 	 * Removes all elements from the collection.
 	 */
 	@Override
 	public void clear() {
+		modCount = 0;
 		for (int i = 0; i < tableMax; i++) {
 			tableArray.set(i, null);
 		}
-		size = 0;		
-	}//end clear
+		size = 0;
+	}// end clear
+
 
 	/**
-	 * Returns an element in the collection that matches the
-	 * input parameter according the equals() method of the
-	 * parameter.
+	 * Returns an element in the collection that matches the input parameter
+	 * according the equals() method of the parameter.
 	 * 
-	 * @param element an element to search for
+	 * @param element
+	 *            an element to search for
 	 * @return a matching element
 	 */
 	@Override
 	public T get(T element) {
-		int index = findChain(element);		
+		int index = findChain(element);
 		Node head = tableArray.get(index);
 		Node current = head;
-		
+
 		while (current != null) {
 			if (current.data.equals(element)) {
 				return current.data;
 			} else {
 				current = current.next;
 			}
-		}		
+		}
 		return null;
-	}//end get
-	
+	}// end get
+
+
 	/**
-	 * runs hashCode() on object and returns appropriate
-	 * index position of the chain object would belong to
-	 * @param T element  to find hash chain of
+	 * runs hashCode() on object and returns appropriate index position of the chain
+	 * object would belong to
+	 * 
+	 * @param T
+	 *            element to find hash chain of
 	 * @return int index of chain
 	 */
-	public int findChain(T element) { //TODO change to private
+	private int findChain(T element) {
 		return ((element.hashCode()) % tableMax);
-	}//end findChain
+	}// end findChain
+
 
 	/**
 	 * Returns an iterator over the collection.
@@ -207,113 +230,66 @@ public class HashTable<T> implements ICollection<T> {
 	 */
 	@Override
 	public Iterator<T> iterator() {
-		// TODO Auto-generated method stub
 		if (tableArray.isEmpty()) {
 			return Collections.emptyIterator();
 		} else {
-			//return new Enumerator<T>(type, true);
 			return new HashTableIterator();
 		}
-	}//end Iterator
+	}// end Iterator
 
-	
+	// iterator class override
 	private class HashTableIterator implements Iterator<T> {
 
-		protected int expectedModCount = modCount;  //TODO
-		int currentIndex = 0;
-		Node currentNode;
-		
-		ArrayList table;
-        int index;
-        Node entry = null;
-        Node lastReturned = null;		
-        
-        
-        public HashTableIterator() {
-        	table = tableArray;
-    		Collections.reverse(table);
-    		index = table.size() -1;
-        }
-		
+		protected int expectedModCount = modCount; // TODO
+		ArrayList<Node> table = tableArray;
+		int index = 0;
+		Node current = null;
+		@SuppressWarnings("unused")
+		Node lastReturned = null;
+
+
 		@Override
 		public boolean hasNext() {
-			// TODO Auto-generated method stub
-//			if (expectedModCount != modCount) {
-//				throw new ConcurrentModificationException();
-//			}
-//			
-//			for (int i = currentIndex; i < tableMax; i++) {
-//				currentIndex = i;
-//				if (!(tableArray.get(i) == null)) {
-//					Node n = tableArray.get(i);
-//					if ()
-//				}
-//			}
-//			
-			
-			Node e = entry;
-            int i = index;
-            ArrayList t = table;
-            /* Use locals for faster loop iteration */
-            while (e == null && i >= 0) {
-                e = (HashTable<T>.Node) t.get(i);
-                i--;
-            }
-            entry = e;
-            index = i;
-            return e != null;
-			
-		}
+			if (expectedModCount != modCount) {
+				throw new ConcurrentModificationException();
+			}
+
+			Node tempNode = current;
+			int i = index;
+			ArrayList<Node> tempTable = table;
+			while (tempNode == null && i < tableMax) {
+				tempNode =  tempTable.get(i);
+				i++;
+			}
+			current = tempNode;
+			index = i;
+			return tempNode != null;
+		}// end hasNext
+
 
 		@Override
 		public T next() {
 			if (expectedModCount != modCount) {
 				throw new ConcurrentModificationException();
 			}
-			
-			Node et = entry;
-            int i = index;
-            ArrayList t = table;
-            
-            while (et == null && i > 0) {
-            	et = (HashTable<T>.Node) t.get(i);
-                i--;
-            }
-            entry = et;
-            index = i;
-            if (et != null) {
-                Node e = lastReturned = entry;
-                entry = e.next;
-                return e.data;
-            }
-            throw new NoSuchElementException("Hashtable Enumerator");
-			
-		}
-		
-		
-//TODO delete	//field
-//		private int size;  //current size of main hash table
-//		private int tableMax;  //max size of main hash table
-//		public ArrayList<Node> tableArray;  //main array for table
-//		private final int MAXTABLESIZE = 3;
-//		private int modCount;
-		
-		
-		
-		
-		
-	}//end class HashTableIterator
-	
-	
-	
-}//end class HashTable
 
+			Node tempCurrent = current;
+			int i = index;
+			ArrayList<Node> tempTable = table;
 
+			while (tempCurrent == null && i < tableMax) {
+				tempCurrent = tempTable.get(i);
+				i++;
+			}
+			current = tempCurrent;
+			index = i;
+			if (tempCurrent != null) {
+				Node tempNode = lastReturned = current;
+				current = tempNode.next;
+				return tempNode.data;
+			}
+			throw new NoSuchElementException();
+		}// end next
+	}// end class HashTableIterator
 
-
-
-
-
-
-
-
+}// end class HashTable

@@ -32,7 +32,7 @@ public class HashTableDriver {
 		
 		
 		ht.add(t1);
-		System.out.println(ht.findChain(t1));
+		//System.out.println(ht.findChain(t1));
 		System.out.println("add:" + "Test1 " + t1.hashCode());
 		System.out.println("size:" + ht.size());
 		System.out.println();
@@ -71,7 +71,7 @@ public class HashTableDriver {
 		System.out.println("size:" + ht.size());
 		System.out.println();
 		
-		ht.remove(t1);
+		//ht.remove(t1);
 		System.out.println("contains t1 " + ht.contains(t1));
 		System.out.println("get t1 " + ht.get(t1));
 		System.out.println();
@@ -86,11 +86,17 @@ public class HashTableDriver {
 		System.out.println();
 		
 		
-		System.out.println("get t1 " + ht.get(t1) + ht.findChain(t1));
-		System.out.println("get t2 " + ht.get(t2) + ht.findChain(t2));
-		System.out.println("get t3 " + ht.get(t3) + ht.findChain(t3));
-		System.out.println("get t4 " + ht.get(t4) + ht.findChain(t4));
-		System.out.println("get t5 " + ht.get(t5) + ht.findChain(t5));
+		ht.add(t1);
+		ht.add(t2);
+		ht.add(t3);
+		ht.add(t4);
+		ht.add(t5);
+		
+//		System.out.println("get t1 " + ht.get(t1) + ht.findChain(t1));
+//		System.out.println("get t2 " + ht.get(t2) + ht.findChain(t2));
+//		System.out.println("get t3 " + ht.get(t3) + ht.findChain(t3));
+//		System.out.println("get t4 " + ht.get(t4) + ht.findChain(t4));
+//		System.out.println("get t5 " + ht.get(t5) + ht.findChain(t5));
 
 		
 		
@@ -99,8 +105,8 @@ public class HashTableDriver {
 		}
 		
 		
-		
-		
+		ht.clear();
+		System.out.println("size:" + ht.size());
 		
 		
 		
