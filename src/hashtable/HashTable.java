@@ -16,7 +16,8 @@ public class HashTable<T> implements ICollection<T> {
 	//field
 	private int size;  //current size of main hash table
 	private int tableMax;  //max size of main hash table
-	private ArrayList<Node> tableArray;  //main array for table
+	public ArrayList<Node> tableArray;  //main array for table
+	private final int MAXTABLESIZE = 3;
 	
 	
 	//private inner class
@@ -39,7 +40,7 @@ public class HashTable<T> implements ICollection<T> {
 	public HashTable() {
 		super();
 		this.size = 0;
-		this.tableMax = 100;
+		this.tableMax = MAXTABLESIZE;
 		this.tableArray = new ArrayList<>();
 		for (int i = 0; i < tableMax; i++) {
 			tableArray.add(null);
@@ -60,6 +61,7 @@ public class HashTable<T> implements ICollection<T> {
 		Node head = tableArray.get(index);
 		if (head == null) {
 			head = new Node(element);
+			tableArray.set(index, head);
 			size++;
 			System.out.println("no head");
 			return;
@@ -70,13 +72,13 @@ public class HashTable<T> implements ICollection<T> {
 		while (current != null) {
 			if (current.data.equals(element)) {
 				current.data = element;
-				System.out.println("rfgerger");
+				System.out.println("Add already exists");
 				break;
 			}
 			if (current.next == null) {
 				current.next = new Node(element);
 				size++;
-				System.out.println("gggg");
+				System.out.println("Add to existing link:" + element);
 				break;
 			} else {
 				current = current.next;
@@ -109,6 +111,7 @@ public class HashTable<T> implements ICollection<T> {
 				current = current.next;
 			}
 		}//end while
+		//TODO throw exception
 	}//end remove
 
 	/**
